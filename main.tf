@@ -8,16 +8,19 @@ terraform {
 }
 
 provider "snowflake" {
-  role = "SYSADMIN"
+  alias = "sys_admin"
+  role  = "SYSADMIN"
 }
 
 resource "snowflake_database" "db" {
-  name = "TF_DEMO"
+  provider = snowflake.sys_admin
+  name     = "TF_DEMO"
 }
 
 resource "snowflake_warehouse" "warehouse" {
+  provider       = snowflake.sys_admin
   name           = "TF_DEMO"
-  warehouse_size = "small"
+  warehouse_size = "large"
 
   auto_suspend = 60
 }
@@ -33,6 +36,7 @@ resource "snowflake_role" "role" {
 }
 
 resource "snowflake_database_grant" "grant" {
+  provider          = snowflake.security_admin
   database_name     = snowflake_database.db.name
   privilege         = "USAGE"
   roles             = [snowflake_role.role.name]
@@ -40,12 +44,14 @@ resource "snowflake_database_grant" "grant" {
 }
 
 resource "snowflake_schema" "schema" {
+  provider   = snowflake.sys_admin
   database   = snowflake_database.db.name
   name       = "TF_DEMO"
   is_managed = false
 }
 
 resource "snowflake_schema_grant" "grant" {
+  provider          = snowflake.security_admin
   database_name     = snowflake_database.db.name
   schema_name       = snowflake_schema.schema.name
   privilege         = "USAGE"
@@ -54,6 +60,7 @@ resource "snowflake_schema_grant" "grant" {
 }
 
 resource "snowflake_warehouse_grant" "grant" {
+  provider          = snowflake.security_admin
   warehouse_name    = snowflake_warehouse.warehouse.name
   privilege         = "USAGE"
   roles             = [snowflake_role.role.name]
@@ -75,6 +82,7 @@ resource "snowflake_user" "user" {
 }
 
 resource "snowflake_role_grants" "grants" {
+  provider  = snowflake.security_admin
   role_name = snowflake_role.role.name
   users     = [snowflake_user.user.name]
 }
