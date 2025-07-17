@@ -7,12 +7,12 @@ terraform {
 }
 
 provider "snowflake" {
-  organization_name = "your_org_name"
-  account_name      = "your_account_name"
+  organization_name = "sfsenorthamerica"
+  account_name      = "horizon_lab_azure_consumer_edd"
   user              = "TERRAFORM_SVC"
   role              = "SYSADMIN"
   authenticator     = "SNOWFLAKE_JWT"
-  private_key       = file("~/.ssh/snowflake_tf_snow_key.p8")
+  private_key       = file("/Users/edendulk/code/sfguide-terraform-sample/snowflake_tf_snow_key.pub")
 }
 
 # Create a database
